@@ -84,7 +84,7 @@ qua_han -> quá hạn
 - Ubuntu Server đã cài Docker & Docker Compose
 - SSH vào server
 
-### 3.2. 
+### 3.2. Tạo project
 
 ---
 
