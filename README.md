@@ -80,7 +80,13 @@ qua_han -> quá hạn
 
 ---
 ## 3. XÂY DỰNG VÀ CÀI ĐẶT ⚙️
+### 3.1. Môi trường cài đặt
+- Ubuntu Server đã cài Docker & Docker Compose
+- SSH vào server
+
+### 3.2. 
 
 ---
+
 ## 4. KẾT QUẢ 📊
 
