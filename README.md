@@ -33,7 +33,7 @@
 #### 📌 Bảng khachhang (lưu thông tin khách hàng đến cầm đồ) 
 | Tên trường | Kiểu dữ liệu | Mô tả |
 |:---| :--- | :--- |
-| id | bigint | Mã khách hàng (khóa chính) |
+| id | bigint | Mã khách hàng (PK) |
 | ho_ten | varchar(100) | Họ tên khách hàng |
 | cccd | varchar(12) | Số CCCD |
 | sdt | varchar (10) | Số điện thoại |
@@ -43,7 +43,7 @@
 #### 📌 Bảng taisan (lưu thông tin tài sản cầm đồ)
 | Tên trường | Kiểu dữ liệu | Mô tả |
 |:---| :--- | :--- |
-| id | bigint | Mã tài sản (khóa chính) |
+| id | bigint | Mã tài sản (PK) |
 | ten_tai_san | varchar(200) | Tên tài sản |
 | mo_ta | longtext | Mô tả chi tiết tài sản |
 | tinh_trang | varchar(50) | Tình trạng tài sản |
@@ -72,7 +72,7 @@ qua_han -> quá hạn
 #### 📌 Bảng thanhtoan (lưu thông tin thanh toán hợp đồng)
 | Tên trường | Kiểu dữ liệu | Mô tả |
 |:---| :--- | :--- |
-| id | bigint | Mã thanh toán (khóa chính) |
+| id | bigint | Mã thanh toán (PK) |
 | ngay_thanh_toan | date | Ngày thanh toán |
 | so_tien | decimal(15,0) | Số tiền thanh toán |
 | ghi_chu | longtext | Ghi chú |
