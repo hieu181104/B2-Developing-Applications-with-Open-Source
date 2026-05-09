@@ -84,7 +84,80 @@ qua_han -> quá hạn
 - Ubuntu Server đã cài Docker & Docker Compose
 - SSH vào server
 
+Kiểm tra phiên bản:
+```
+docker --version
+docker compose version
+```
+<img width="1068" height="153" alt="image" src="https://github.com/user-attachments/assets/c8fd0035-5066-46a7-892b-ad6454a64bf1" />
+
 ### 3.2. Tạo project
+- Tạo thư mục `mkdir camdo_project`
+- Chuyển vào thư mục `cd camdo_project`
+- Tạo thư mục django `mkdir django` trong `camdo_project`
+
+<img width="1322" height="182" alt="image" src="https://github.com/user-attachments/assets/7e007390-22ab-49e9-9372-b5ef4c87d0ba" />
+
+### 3.3. Tạo file `Dockerfile`
+- Vào thư mục django `cd django`
+- Tạo file `nano Dockerfile`
+- Thêm nội dung cho file
+- Lưu lại `Ctrl + O` -> `Enter` -> `Ctrl + X `
+
+<img width="2315" height="1124" alt="image" src="https://github.com/user-attachments/assets/ead2a1e5-38d2-47b1-a90d-fdbb35fa39cb" />
+
+Nội dung file `Dockerfile`:
+```
+# Dùng Python 3.11 bản slim (nhẹ, không có các package thừa)
+FROM python:3.11-slim
+
+# Đặt thư mục làm việc bên trong container
+WORKDIR /app
+
+# Cài các gói hệ thống cần thiết:
+#   - gcc, pkg-config: để biên dịch thư viện C
+#   - default-libmysqlclient-dev: header để cài mysqlclient (kết nối MariaDB)
+#   - curl: tiện ích mạng (debug)
+#   - && rm -rf /var/lib/apt/list/* : xóa cache apt để giảm kích thước image
+RUN apt-get update && apt-get install -y \
+    gcc \
+    pkg-config \
+    default-libmysqlclient-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*    
+
+# Copy file requirements.txt vào container trước
+# (tách riêng để Docker cache layer này, không rebuild khi chỉ sửa code)
+COPY requirements.txt .
+
+# Cài toàn bộ thư viện Python từ requirements.txt
+# --no-cache-dir: không lưu cache pip giúp giảm kích thước image
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy toàn bộ source code vào container
+COPY myshop/ .
+
+# Mở port 8000 để bên ngoài container có thể kết nối
+EXPOSE 8000
+
+# Lệnh mặc định khi container khởi động
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+```
+### 3.4. Tạo file `requirements.txt`
+- Tạo file `nano requirements.txt`
+- Thêm nội dung cho file và lưu lại
+
+<img width="2289" height="1129" alt="image" src="https://github.com/user-attachments/assets/b33c9edb-de4c-4a23-8bf8-546146e75205" />
+
+### 3.5. Tạo file `docker-compose.yml`
+- Quay lại thư mục gốc `cd..`
+- Tạo file `nano docker-compose.yml`
+- Thêm nội dung cho file và lưu lại
+
+
+
+
+
 
 ---
 
