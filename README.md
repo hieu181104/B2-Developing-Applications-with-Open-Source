@@ -17,11 +17,11 @@
 
 ### Công nghệ: sử dụng Docker trên Ubuntu với 3 service:
 
-| Tên serivce | Chức năng | Cổng |
-| :---: | --- | :---: |
-| MariaDB | Lưu trữ cơ sở dữ liệu | 0000 |
-| PhpMyAdmin | Kiểm tra cơ sở dữ liệu | 0000 |
-| Django | Build 1 Docker container (dùng Dockerfile) | 0000 |
+| Tên serivce | Chức năng | 
+| :--- | :--- | 
+| MariaDB | Lưu trữ cơ sở dữ liệu | 
+| PhpMyAdmin | Kiểm tra cơ sở dữ liệu | 
+| Django | Build 1 Docker container (dùng Dockerfile) | 
 
 ---
 
