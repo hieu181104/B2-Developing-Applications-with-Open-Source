@@ -277,6 +277,7 @@ networks:
 
 <img width="2339" height="596" alt="image" src="https://github.com/user-attachments/assets/925350b4-3be4-4f6b-bed0-d6b10de2c659" />
 
+
 - kết quả thấy 3 container đã hoạt động
 
 ### 3.7. Khởi tạo project Django
@@ -285,15 +286,15 @@ networks:
 
 <img width="2172" height="78" alt="image" src="https://github.com/user-attachments/assets/41c8f456-4168-40b6-bb2d-7a427156643c" />
 
-Kết quả xuất hiện các thư mục và tệp: `config`, `core`, `manage.py`:
+- Kết quả xuất hiện các thư mục và tệp: `config`, `core`, `manage.py`:
 
 <img width="1575" height="109" alt="image" src="https://github.com/user-attachments/assets/7cc9f924-c019-4658-b2f4-81ed307f87c6" />
 
 ### 3.8. Chỉnh sửa file `settings.py`
 - Thực hiện `nano django/config/settings.py`
 - Tìm kiếm và chỉnh sửa một số thông tin trong file:
-```
 
+```
 import os
 
 # Lấy giá trị từ biến môi trường .env, nếu không thấy thì dùng một chuỗi tạm
@@ -369,6 +370,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'   
 
 ```
+### 3.9. Định nghĩa models và admin
+- Sửa file `nano django/myshop/core/models.py`
+
+
 
 
 ---
