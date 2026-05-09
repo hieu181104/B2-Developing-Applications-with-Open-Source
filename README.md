@@ -317,7 +317,7 @@ INSTALLED_APPS = [
     'widget_tweaks',        
 ]
 
-ROOT_URLCONF = 'myshop.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -372,6 +372,35 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 ```
 ### 3.9. Định nghĩa models và admin
 - Sửa file `nano django/myshop/core/models.py`
+
+<img width="2291" height="1126" alt="image" src="https://github.com/user-attachments/assets/4f38c9bf-bbe3-4be2-8583-a7e46a7e1471" />
+
+
+- Chạy lệnh `docker compose exec django python manage.py makemigrations core` để tạo file makemigrations
+
+<img width="2057" height="326" alt="image" src="https://github.com/user-attachments/assets/e78207ae-7952-48c2-984a-8f5eeba5318e" />
+
+- Chạy lệnh `docker compose exec django python manage.py migrate` để thực thi thay đổi.
+
+<img width="1844" height="193" alt="image" src="https://github.com/user-attachments/assets/09c911cd-1740-40e2-8396-f584885834ee" />
+
+- Tạo tài khoản admin, chạy lệnh : `docker compose exec django python manage.py createsuperuser`
+
+<img width="2219" height="177" alt="image" src="https://github.com/user-attachments/assets/5a4f579a-5085-4d41-b87c-7650bda520f3" />
+
+- Đăng ký các bảng vào trang admin: `nano django/myshop/core/admin.py`
+
+<img width="2341" height="1211" alt="image" src="https://github.com/user-attachments/assets/0f152490-37aa-4c78-a130-112e5613857c" />
+
+#### Kiểm tra:
+- Mở PhpMyAmin `192.168.164.129:8088` và đăng nhập
+- Mở database `camdo_db` thấy các bảng đã được tạo là OK. 
+
+<img width="3071" height="1840" alt="image" src="https://github.com/user-attachments/assets/9d68327c-9ecd-4788-a305-fe5f62dd936f" />
+
+- Truy cập `192.168.164.129:8000/admin` để mở trang quản trị django
+
+<img width="3066" height="1740" alt="image" src="https://github.com/user-attachments/assets/10e0560a-ab1a-4dda-b819-f02c63207439" />
 
 
 
