@@ -398,9 +398,34 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 <img width="3071" height="1840" alt="image" src="https://github.com/user-attachments/assets/9d68327c-9ecd-4788-a305-fe5f62dd936f" />
 
-- Truy cập `192.168.164.129:8000/admin` để mở trang quản trị django
+#### Truy cập `192.168.164.129:8000/admin` để mở trang quản trị django
 
 <img width="3066" height="1740" alt="image" src="https://github.com/user-attachments/assets/10e0560a-ab1a-4dda-b819-f02c63207439" />
+
+#### Thử thêm dữ liệu cho các bảng:
+<img width="3070" height="1750" alt="image" src="https://github.com/user-attachments/assets/35e348e0-1785-433e-aa86-a7d3be013483" />
+
+<img width="3066" height="1744" alt="image" src="https://github.com/user-attachments/assets/cf328fda-7811-4275-b400-75e254032f60" />
+
+#### Kiểm tra PhpMyAdmin, dữ liệu đã xuất hiện trong csdl:
+<img width="3067" height="1746" alt="image" src="https://github.com/user-attachments/assets/e43da6ce-4d3a-4808-8c9f-9e90d5160685" />
+
+#### Các bảng còn lại được thêm thông tin tương tự
+- Bảng Tài sản:
+<img width="3071" height="1650" alt="image" src="https://github.com/user-attachments/assets/18546429-683b-484a-b736-7a1e1505b107" />
+
+<img width="3071" height="1744" alt="image" src="https://github.com/user-attachments/assets/5431147b-97ac-4670-bbbd-30326b809ea1" />
+
+- Bảng Hợp đồng:
+
+<img width="3069" height="1743" alt="image" src="https://github.com/user-attachments/assets/2336bc0c-3340-47e2-a9a6-8e05a5ddfb92" />
+
+#### Chú ý: trong Hopdong, phần Id tài sản và Id khách hàng chỉ việc chọn text thay vì phải chọn id khó nhớ. 
+<img width="3065" height="1742" alt="image" src="https://github.com/user-attachments/assets/3d49ea28-e586-4a4b-9cee-7a6ab10983f1" />
+
+
+- Bảng Thanh toán:
+<img width="3071" height="1745" alt="image" src="https://github.com/user-attachments/assets/5d5f4f00-60fc-446d-9050-d5211e08bb83" />
 
 
 
