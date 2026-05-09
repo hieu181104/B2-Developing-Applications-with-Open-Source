@@ -457,9 +457,107 @@ urlpatterns = [
     path('', include('core.urls')), # Kết nối tới urls của app core
 ]
 ```
+### 3.11. Public website với cloudflare
+#### Bước 1: Tạo Tunnel và lấy Token
+- Truy cập và login Cloudflare
+- Vào Cloudflare Zero Trust -> Networking -> Tunnels chọn Create Tunnel
+- Đặt tên: `django-tunnel`
+- Ở phần Operating System chọn Docker
+- Copy đoạn mã trong ô Run tunnel with Docker, phần sau chữ `--token` chính là CLOUDFLARE_TOKEN
+<img width="3063" height="1737" alt="image" src="https://github.com/user-attachments/assets/7c90fe3c-2d07-4273-b762-b2df9aeafa68" />
 
+#### Bước 2: Đưa token vào file .env
+- Đứng ở thư mục gốc `cd camdo_project`
+- Chạy lệnh `nano .env`
+- Thêm dòng này vào file `CLOUDFLARE_TOKEN= {Chuỗi token vừa copy}`
+
+#### Bước 3: Thêm cloudflare vào docker-compose.yml
+- Mở file `nano docker-compose.yml`
+- Thêm đoạn này:
+```
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: camdo_cloudflared
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - django
+    networks:
+      - camdo_net
+```
+#### Bước 4: Chạy lại hệ thống
+- Chạy lệnh `docker compose up -d`
+<img width="2330" height="618" alt="image" src="https://github.com/user-attachments/assets/f8849a62-c4e2-45e1-941c-d535e74c43e8" />
+
+- Kiểm tra trong cloudflare, nếu Connect Status hiện successfull là thành công , bấm Continue.
+
+<img width="3020" height="1486" alt="image" src="https://github.com/user-attachments/assets/3f018b91-7bea-4128-8114-91c046fcb97b" />
+
+#### Bước 5: Tạo public hostname
+- Trong Tunnels chọn vào tunnel vừa tạo thành công `django-tunnel`
+- Click chọn `Add a route` -> `Published application`
+- Điền các thông tin:
+
+| Trường thông tin | Giá trị |
+|:---:| :---: |
+| subdomain | django |
+| domain | nguyentrunghiieu.id.vn |
+| service url | http://django:8000 |
+
+<img width="3060" height="1709" alt="image" src="https://github.com/user-attachments/assets/08d44c4a-718a-44df-a3ad-50990980702b" />
+
+- Bấm Add route để hoàn tất
+
+<img width="3062" height="1580" alt="image" src="https://github.com/user-attachments/assets/0a9ceca0-5fdc-4ea9-81d5-e1eecfc91a41" />
 
 ---
 
 ## 4. KẾT QUẢ 📊
 
+Kiểm tra thành quả:
+### 4.1. Truy cập `django.nguyentrunghiieu.id.vn/admin` để vào trang quản trị
+
+<img width="3072" height="1920" alt="image" src="https://github.com/user-attachments/assets/a16f3246-649e-41fc-8de8-0ac47e122476" />
+
+#### Tuy nhiên, Django có một tính năng bảo mật rất hay, khi bạn đưa web lên mạng qua Cloudflare Tunnel, người dùng truy cập bằng tên miền https://django.nguyentrunghiieu.id.vn. Tuy nhiên, bên trong container, Django vẫn nghĩ nó đang chạy ở localhost. Khi bạn bấm nút "Đăng nhập" (gửi dữ liệu dạng POST), Django kiểm tra thấy nguồn gửi tới (Origin) là từ một tên miền lạ chưa được cấp phép, nên nó chặn lại để phòng chống tấn công giả mạo (Cross-Site Request Forgery - CSRF). Vì vậy cần khai báo cho django biết domain này là "người nhà" (Trusted Origin).
+
+<img width="3072" height="1920" alt="image" src="https://github.com/user-attachments/assets/5108825c-1d55-421a-9e2c-6c12cb395404" />
+
+#### Khắc phục:
+- Mở file settings.py
+- Thêm dòng sau :
+```
+# Cho phép Django nhận dữ liệu POST từ tên miền Cloudflare
+CSRF_TRUSTED_ORIGINS = ['https://django.nguyentrunghiieu.id.vn']
+```
+- Lưu file lại và chạy lệnh sau để django cập nhật cấu hình mới:
+```
+cd ~/camdo_project
+docker compose restart django
+```
+
+<img width="3072" height="1920" alt="image" src="https://github.com/user-attachments/assets/22ae018d-e57a-4247-8225-dcfd1e1844fb" />
+
+#### -> Như vậy, trang admin đã đăng nhập thành công và sẵn sàng quản lý !
+
+### 4.2. Truy cập `django.nguyentrunghiieu.id.vn` để vào trang con nợ đến hạn
+
+<img width="3072" height="1920" alt="image" src="https://github.com/user-attachments/assets/faed7d86-15d5-4619-8129-d7a9c0fd7bcd" />
+
+#### -> Trang con nợ đến hạn cũng đã hoạt động tốt. 
+
+### 4.3. Những điều đã học được thông qua hành trình này
+- Em đã biết cách đóng gói toàn bộ hệ thống (Django, MariaDB, PhpMyAdmin) vào các container độc lập.
+- Hiểu được cách các container giao tiếp với nhau qua mạng nội bộ (camdo_net) thay vì dùng IP vật lý.
+- Tự tay thiết kế các bảng (Models), thiết lập Khóa ngoại (Foreign Key), và cách dùng lệnh makemigrations/migrate để đồng bộ code thành cấu trúc bảng thật trong MariaDB.
+- Biết cách cấu hình settings.py để Django "nói chuyện" được với CSDL bên ngoài.
+- Nắm được luồng đi của dữ liệu: Từ CSDL -> được lọc (filter) qua views.py -> đẩy ra ngoài giao diện home.html.
+- Biết cách kết hợp Jinja2 ({% for %}, {% if %}) và Bootstrap 5 để biến những dòng dữ liệu thô cứng thành một bảng tính trực quan, chuyên nghiệp.
+- Không còn hoảng sợ khi container bị "restarting". Biết cách dùng docker logs, dùng "mẹo" treo container để vào sửa lỗi.
+- Xử lý mượt mà các lỗi kinh điển như ModuleNotFoundError (do sai đường dẫn cấu hình) hay TemplateDoesNotExist.
+- Dùng Cloudflare Tunnel (dưới dạng Docker) để đưa website ra Internet với tên miền thật, có sẵn HTTPS mà không cần cấu hình mạng phức tạp.
+- Hiểu và xử lý thành công cơ chế bảo mật chống giả mạo CSRF (403 Forbidden) của Django khi chạy trên môi trường public.
+
+---
