@@ -421,13 +421,42 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 <img width="3069" height="1743" alt="image" src="https://github.com/user-attachments/assets/2336bc0c-3340-47e2-a9a6-8e05a5ddfb92" />
 
 #### Chú ý: trong Hopdong, phần Id tài sản và Id khách hàng chỉ việc chọn text thay vì phải chọn id khó nhớ. 
-<img width="3065" height="1742" alt="image" src="https://github.com/user-attachments/assets/3d49ea28-e586-4a4b-9cee-7a6ab10983f1" />
-
+<img width="3071" height="1734" alt="image" src="https://github.com/user-attachments/assets/467db32f-5a3b-4e63-b848-2c177ff4d078" />
 
 - Bảng Thanh toán:
 <img width="3071" height="1745" alt="image" src="https://github.com/user-attachments/assets/5d5f4f00-60fc-446d-9050-d5211e08bb83" />
 
+<img width="3065" height="1742" alt="image" src="https://github.com/user-attachments/assets/3d49ea28-e586-4a4b-9cee-7a6ab10983f1" />
 
+### 3.10. Tạo trang liệt kê con nợ
+- Thực hiện sửa file `nano django/myshop/core/views.py`
+```
+from django.shortcuts import render
+from .models import HopDong
+from datetime import date
+
+def home_page(request):
+    # Lấy các hợp đồng có trạng thái là 'dang_cam' HOẶC 'qua_han' 
+    # VÀ có ngày đáo hạn nhỏ hơn ngày hôm nay
+    ds_con_no = HopDong.objects.filter(
+        ngay_dao_han__lt=date.today(),
+        trang_thai__in=['dang_cam', 'qua_han'] # Lọc trong danh sách trạng thái
+    )
+    return render(request, 'core/home.html', {'ds_con_no': ds_con_no})
+```
+
+- Tạo thư mục `templates/core`, tạo file `nano home.html`
+
+- Kết nối URL của app vào project `nano config/urls.py` sửa thành:
+```
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('core.urls')), # Kết nối tới urls của app core
+]
+```
 
 
 ---
