@@ -272,6 +272,10 @@ networks:
 
 ### 3.6. Chạy Docker Compose
 
+- Chạy lệnh `docker compose up -d --build` để build image và khởi động 3 container
+
+<img width="2339" height="596" alt="image" src="https://github.com/user-attachments/assets/925350b4-3be4-4f6b-bed0-d6b10de2c659" />
+
 
 
 
