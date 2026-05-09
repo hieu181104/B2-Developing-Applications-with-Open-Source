@@ -92,6 +92,35 @@ docker compose version
 <img width="1068" height="153" alt="image" src="https://github.com/user-attachments/assets/c8fd0035-5066-46a7-892b-ad6454a64bf1" />
 
 ### 3.2. Tạo project
+Cấu trúc thư mục:
+```
+camdo_project/                  
+│
+├── docker-compose.yml              ← định nghĩa 3 service
+├── .env                            ← chứa password, secret key
+├── .gitignore                      ← bỏ qua .env, __pycache__, ...
+│
+└── django/                         ← thư mục django
+   ├── Dockerfile                  ← build image Python + Django
+   ├── requirements.txt            ← danh sách thư viện pip
+   │
+   └── myshop/                   
+       ├── manage.py
+       ├── config/               
+       │   ├── settings.py         
+       │   ├── urls.py
+       │   └── wsgi.py│
+       │
+       └── core/                   ← app chính
+           ├── models.py           ← định nghĩa bảng CSDL
+           ├── admin.py            ← trang admin
+           ├── views.py            ← view home_page con nợ đến hạn nhưng chưa trả tiền
+           ├── urls.py
+           └── templates/
+               └── core/
+                   └── home.html   ← template Jinja2
+```
+
 - Tạo thư mục `mkdir camdo_project`
 - Chuyển vào thư mục `cd camdo_project`
 - Tạo thư mục django `mkdir django` trong `camdo_project`
@@ -154,7 +183,94 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 - Tạo file `nano docker-compose.yml`
 - Thêm nội dung cho file và lưu lại
 
+```
+version: '3.8'
 
+services:
+
+  # 1. MariaDB: lưu toàn bộ CSDL 
+  mariadb:
+    image: mariadb:10.11       
+    container_name: camdo_mariadb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql   # lưu data ra ngoài, không mất khi restart
+    ports:
+      - "3307:3306"
+    networks:
+      - camdo_net
+    healthcheck:                  
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. phpMyAdmin: giao diện web xem CSDL 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: camdo_phpmyadmin
+    restart: always
+    env_file:
+      - .env
+    environment:
+      PMA_HOST: mariadb        
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8088:80"             
+    depends_on:
+      mariadb:
+        condition: service_healthy  # chỉ khởi động sau khi mariadb healthy
+    networks:
+      - camdo_net
+
+  # 3. Django: build từ Dockerfile
+  django:
+    build:
+      context: ./django             # thư mục chứa Dockerfile
+      dockerfile: Dockerfile
+    container_name: camdo_django
+    restart: always
+    env_file:
+      - .env                        # nạp biến từ file .env
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./django/myshop:/app        # mount thư mục
+    ports:
+      - "8000:8000"             
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - camdo_net
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+# ── Volumes dùng chung 
+volumes:
+  mariadb_data:
+
+# ── Network nội bộ giữa các container 
+networks:
+  camdo_net:
+    driver: bridge
+```
+
+### 3.6. Chạy Docker Compose
 
 
 
