@@ -273,10 +273,102 @@ networks:
 ### 3.6. Chạy Docker Compose
 
 - Chạy lệnh `docker compose up -d --build` để build image và khởi động 3 container
+- Kiểm tra bằng lệnh `docker ps`
 
 <img width="2339" height="596" alt="image" src="https://github.com/user-attachments/assets/925350b4-3be4-4f6b-bed0-d6b10de2c659" />
 
+- kết quả thấy 3 container đã hoạt động
 
+### 3.7. Khởi tạo project Django
+- Chạy lệnh `docker compose exec django django-admin startproject config .`
+- Tạo app core `docker compose exec django python manage.py startapp core`
+
+<img width="2172" height="78" alt="image" src="https://github.com/user-attachments/assets/41c8f456-4168-40b6-bb2d-7a427156643c" />
+
+Kết quả xuất hiện các thư mục và tệp: `config`, `core`, `manage.py`:
+
+<img width="1575" height="109" alt="image" src="https://github.com/user-attachments/assets/7cc9f924-c019-4658-b2f4-81ed307f87c6" />
+
+### 3.8. Chỉnh sửa file `settings.py`
+- Thực hiện `nano django/config/settings.py`
+- Tìm kiếm và chỉnh sửa một số thông tin trong file:
+```
+
+import os
+
+# Lấy giá trị từ biến môi trường .env, nếu không thấy thì dùng một chuỗi tạm
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-default-key-123')
+
+# Debug: True khi dev, False khi production
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+
+# Cho phép mọi host truy cập (phù hợp khi dùng Cloudflare Tunnel)
+ALLOWED_HOSTS = ['*']
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'core',                  # app chính
+    'widget_tweaks',        
+]
+
+ROOT_URLCONF = 'myshop.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # Thư mục templates toàn cục
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,            # Tìm templates trong thư mục mỗi app
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'config.wsgi.application'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',    # dùng MySQL
+        'NAME': os.environ.get('MYSQL_DATABASE', 'camdo_db'),
+        'USER': os.environ.get('MYSQL_USER', 'admin'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', '123456'),
+        'HOST': os.environ.get('DB_HOST', 'mariadb'),  # tên service
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',                # hỗ trợ tiếng Việt
+        },
+    }
+}
+
+# ── Xác thực mật khẩu 
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+LANGUAGE_CODE = 'vi'           
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
+USE_I18N = True
+USE_TZ = True
+
+# ── Static files 
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'   
+
+```
 
 
 ---
